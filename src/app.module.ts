@@ -6,6 +6,8 @@ import { TodoModule } from './todo/todo.module';
 import { CommonService } from './common-module/common-module.service';
 import { TodoEntity } from './todo/todo.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CvModule } from './cv/cv.module';
+import { SkillModule } from './skill/skill.module';
 
 
 @Module({
@@ -22,6 +24,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       autoLoadEntities: true,
       synchronize: true, 
     }),
+    CvModule,
+    SkillModule,
   ],
   controllers: [AppController],
   providers: [AppService, CommonService],

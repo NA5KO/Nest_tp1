@@ -13,6 +13,9 @@ export class TodoEntity extends BaseEntity {
   @Column('text')
   description: string;
 
+  @Column()
+  userId: string;
+
   @Column({
     type: 'enum',
     enum: StatusEnum,

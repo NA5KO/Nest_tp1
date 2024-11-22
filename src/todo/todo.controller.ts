@@ -1,11 +1,14 @@
-import { Controller, Post, Body, Param, Put, Delete, Patch, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, Param, Put, Delete, Patch, Get, Query, UseGuards, Req } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/CreateToDo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoEntity } from './todo.entity';
 import { StatusEnum } from './todo.enums';
+import { AuthMiddleware } from '../auth/auth.middleware';
+
 
 @Controller('todos')
+@UseGuards(AuthMiddleware)
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
@@ -21,24 +24,30 @@ export class TodoController {
   @Post()
   async addTodo(
     @Body() createTodoDto: CreateTodoDto,
+    @Req() req: Request,
   ) {
-    return await this.todoService.addTodo(createTodoDto);
+    const userId = req['user'].id;
+    return await this.todoService.addTodo(createTodoDto, userId);
   }
 
   @Put(':id')
   async updateTodo(
     @Param('id') id: string,
     @Body() updateTodoDto: UpdateTodoDto,
+    @Req() req: Request,
   ) {
-    return await this.todoService.updateTodo(id, updateTodoDto);
+    const userId = req['user'].id;
+    return await this.todoService.updateTodo(id, updateTodoDto, userId);
   }
 
   @Delete(':id')
-    async deleteTodo(
-        @Param('id') id: string,
-    ) {
-        return await this.todoService.deleteTodo(id);
-    }
+  async deleteTodo(
+    @Param('id') id: string,
+    @Req() req: Request,
+  ) {
+    const userId = req['user'].id;
+    return await this.todoService.deleteTodo(id, userId);
+  }
 
     @Patch(':id/restore')
   async restoreTodo(

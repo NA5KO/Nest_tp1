@@ -21,35 +21,33 @@ export class TodoService {
     return await this.todoRepository.save(newTodo);
   }
     */
-  async addTodo(createTodoDto: CreateTodoDto): Promise<TodoEntity> {
-    const newTodo = this.todoRepository.create(createTodoDto);
+  async addTodo(createTodoDto: CreateTodoDto, userId: string): Promise<TodoEntity> {
+    const newTodo = this.todoRepository.create({ ...createTodoDto, userId });
     return await this.todoRepository.save(newTodo);
   }
+  
 
-  async updateTodo(id: string, updateTodoDto: UpdateTodoDto): Promise<TodoEntity> {
-    const todo = await this.todoRepository.findOneBy({ id });
+  async updateTodo(
+    id: string,
+    updateTodoDto: UpdateTodoDto,
+    userId: string,
+  ): Promise<TodoEntity> {
+    const todo = await this.todoRepository.findOneBy({ id, userId });
     if (!todo) {
-      throw new NotFoundException(`Todo with id ${id} not found`);
+      throw new NotFoundException(`Todo with id ${id} not found or you are not authorized.`);
     }
-
+  
     Object.assign(todo, updateTodoDto);
-
     return await this.todoRepository.save(todo);
   }
 
-  async deleteTodo(id: string): Promise<void> {
-    const result = await this.todoRepository.softDelete(id);
-  if (result.affected === 0) {
-    throw new NotFoundException(`Todo with id ${id} not found`);
-  }
-    /*const todo = await this.todoRepository.findOneBy({ id });
+  async deleteTodo(id: string, userId: string): Promise<void> {
+    const todo = await this.todoRepository.findOneBy({ id, userId });
     if (!todo) {
-      throw new NotFoundException(`Todo with id ${id} not found`);
+      throw new NotFoundException(`Todo with id ${id} not found or you are not authorized.`);
     }
-
-    await this.todoRepository.remove(todo);
-  }
-    */
+  
+    await this.todoRepository.softDelete(id);
   }
 
   async restoreTodo(id: string): Promise<void> {
